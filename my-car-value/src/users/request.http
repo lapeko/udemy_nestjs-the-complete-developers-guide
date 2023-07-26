@@ -8,18 +8,18 @@ Content-Type: application/json
 }
 
 ### Find user by id
-GET http://localhost:3000/auth/1
+GET http://localhost:3000/auth/2
 
 ### Get isers by email
-GET http://localhost:3000/auth?email=asd@asd.asd
+GET http://localhost:3000/auth?email=a@b.cd
 
 ### Delete user bu id
 DELETE http://localhost:3000/auth/1
 
 ### Update user by id
-PATCH  http://localhost:3000/auth/4
+PATCH  http://localhost:3000/auth/2
 Content-Type: application/json
 
 {
-  "password": "11111111111111"
+  "email": "a@b.cd"
 }
