@@ -1,7 +1,25 @@
-POST http://localhost:3000/users/signup
+### Create user
+POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
   "email": "asd@asd.asd",
   "password": "123123123"
+}
+
+### Find user by id
+GET http://localhost:3000/auth/1
+
+### Get isers by email
+GET http://localhost:3000/auth?email=asd@asd.asd
+
+### Delete user bu id
+DELETE http://localhost:3000/auth/1
+
+### Update user by id
+PATCH  http://localhost:3000/auth/4
+Content-Type: application/json
+
+{
+  "password": "11111111111111"
 }
