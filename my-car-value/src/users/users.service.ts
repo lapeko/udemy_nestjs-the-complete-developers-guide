@@ -7,13 +7,14 @@ import { User } from './users.entity';
 export class UsersService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
-  createUser(userData: { email: string; password: string }) {
-    const user = this.userRepo.create(userData);
+  createUser(email: string, password: string) {
+    const user = this.userRepo.create({ email, password });
 
     return this.userRepo.save(user);
   }
 
   findOne(id: number) {
+    if (!id) return;
     return this.userRepo.findOneBy({ id });
   }
 
