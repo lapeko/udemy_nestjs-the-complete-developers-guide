@@ -3,7 +3,7 @@ import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { UsersService } from './users.service';
 
-const scrypt = promisify(_scrypt);
+const script = promisify(_scrypt);
 
 @Injectable()
 export class AuthService {
@@ -16,7 +16,7 @@ export class AuthService {
 
     const salt = randomBytes(8).toString('hex');
 
-    const hash = (await scrypt(password, salt, 32)) as Buffer;
+    const hash = (await script(password, salt, 32)) as Buffer;
 
     const result = `${salt}.${hash.toString('hex')}`;
 
@@ -32,7 +32,7 @@ export class AuthService {
 
     const [salt, dbHash] = user.password.split('.');
 
-    const hash = (await scrypt(password, salt, 32)) as Buffer;
+    const hash = (await script(password, salt, 32)) as Buffer;
 
     if (hash.toString('hex') !== dbHash)
       throw new BadRequestException('Incorrect email or password');
