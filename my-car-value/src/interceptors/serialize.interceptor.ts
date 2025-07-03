@@ -20,7 +20,7 @@ export class SerializeInterceptor implements NestInterceptor {
   ): Observable<any> {
     return next.handle().pipe(
       map((data) =>
-        plainToInstance(this.dto, data, {
+        plainToInstance(this.dto, JSON.parse(JSON.stringify(data)), {
           excludeExtraneousValues: true,
         }),
       ),
