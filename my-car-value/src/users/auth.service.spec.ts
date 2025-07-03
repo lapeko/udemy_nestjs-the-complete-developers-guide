@@ -3,12 +3,9 @@ import { AuthService } from './auth.service';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
 import { BadRequestException } from '@nestjs/common';
-import { scrypt as _scrypt } from 'crypto';
-import { promisify } from 'util';
+import { scrypt, verify } from '../utils/crypto';
 
-const scrypt = promisify(_scrypt);
-
-const createFakeUserService: () => Partial<UsersService> = () => ({
+const createUserServiceMock: () => Partial<UsersService> = () => ({
   findByEmail: () => Promise.resolve([]),
   createUser: (email: string, password: string) =>
     Promise.resolve({ id: 1, email, password } as User),
@@ -16,14 +13,14 @@ const createFakeUserService: () => Partial<UsersService> = () => ({
 
 describe('AuthService', () => {
   let service: AuthService;
-  let fakeUserService: Partial<UsersService>;
+  let userServiceMock: Partial<UsersService>;
 
   beforeEach(async () => {
-    fakeUserService = createFakeUserService();
+    userServiceMock = createUserServiceMock();
     const module = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: UsersService, useValue: fakeUserService },
+        { provide: UsersService, useValue: userServiceMock },
       ],
     }).compile();
 
@@ -39,18 +36,15 @@ describe('AuthService', () => {
     const password = '1234';
 
     const user = await service.signUp(email, password);
+    const passwordValid = await verify(user.password, password);
 
     expect(user).toEqual({ id: 1, email, password: expect.any(String) });
     expect(user.password).not.toEqual(password);
-    const [salt, hash] = user.password.split('.');
-    expect(salt).toBeDefined();
-    const expectedHash = await scrypt(password, salt, 32)
-      .then((buff: Buffer) => buff.toString('hex'));
-    expect(hash).toBe(expectedHash);
+    expect(passwordValid).toBe(true);
   });
 
   it('should throw an error if email already taken when signup', async () => {
-    fakeUserService.findByEmail = () => Promise.resolve([{ id: 1 } as User]);
+    userServiceMock.findByEmail = () => Promise.resolve([{ id: 1 } as User]);
 
     await expect(service.signUp('', '')).rejects.toThrow(
       new BadRequestException('Email in use'),
@@ -61,5 +55,31 @@ describe('AuthService', () => {
     await expect(service.signIn('', '')).rejects.toThrow(
       new BadRequestException('Incorrect email or password'),
     );
+  });
+
+  it('should throw an error if password is wrong when signing in', async () => {
+    const passwordMock = '1234';
+    const hashedPassword = await scrypt(passwordMock);
+
+    userServiceMock.findByEmail = () =>
+      Promise.resolve([{ id: 1, password: hashedPassword } as User]);
+
+    await expect(service.signIn('', 'wrong')).rejects.toThrow(
+      new BadRequestException('Incorrect email or password'),
+    );
+  });
+
+  it('should return a user on success signing in', async () => {
+    const passwordMock = '1234';
+    const mockedUser = {
+      id: 1,
+      email: 'test@mail.com',
+      password: await scrypt(passwordMock),
+    } as User;
+    userServiceMock.findByEmail = () => Promise.resolve([mockedUser]);
+
+    const user = await service.signIn('', passwordMock);
+
+    expect(user).toBe(mockedUser);
   });
 });
