@@ -18,12 +18,15 @@ import * as process from 'node:process';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'sqlite',
-        database: `${config.get('SQLITE_DATABASE_NAME')}`,
-        entities: [User, Report],
-        synchronize: true,
-      }),
+      useFactory: (config: ConfigService) => {
+        console.log(process.env.NODE_ENV);
+        return {
+          type: 'sqlite',
+          database: `${config.get('DB_NAME')}`,
+          entities: [User, Report],
+          synchronize: true,
+        };
+      },
     }),
     UsersModule,
     ReportsModule,
