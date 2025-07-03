@@ -56,4 +56,10 @@ describe('AuthService', () => {
       new BadRequestException('Email in use'),
     );
   });
+
+  it('should throw an error if email not found when signin', async () => {
+    await expect(service.signIn('', '')).rejects.toThrow(
+      new BadRequestException('Incorrect email or password'),
+    );
+  });
 });
