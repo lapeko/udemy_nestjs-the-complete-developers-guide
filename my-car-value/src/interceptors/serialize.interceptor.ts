@@ -14,10 +14,7 @@ export const Serialize = (dto: new (...args: any[]) => object) =>
 export class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: any) {}
 
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler<any>,
-  ): Observable<any> {
+  intercept(_: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) =>
         plainToInstance(this.dto, JSON.parse(JSON.stringify(data)), {

@@ -16,7 +16,6 @@ export class User {
   email: string;
 
   @Column()
-  // @Exclude() // 1111
   password: string;
 
   @AfterInsert()

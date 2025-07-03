@@ -20,9 +20,7 @@ export class AuthService {
 
     const result = `${salt}.${hash.toString('hex')}`;
 
-    const user = await this.userService.createUser(email, result);
-
-    return user;
+    return this.userService.createUser(email, result);
   }
 
   async signIn(email: string, password: string) {

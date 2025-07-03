@@ -14,7 +14,7 @@ import {
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
-import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { Serialize } from '../interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -23,22 +23,15 @@ import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('auth')
 @Serialize(UserDto)
-@UseGuards(AuthGuard)
-// @UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
   constructor(
     private userService: UsersService,
     private authService: AuthService,
   ) {}
 
-  // @Get('/whoami')
-  // whoAmI(@Session() session: any) {
-  //   return this.userService.findOne(session.userId);
-  // }
-
+  @UseGuards(AuthGuard)
   @Get('/whoami')
   whoAmI(@CurrentUser() user: User) {
-    console.log({ user });
     return user;
   }
 
@@ -58,12 +51,12 @@ export class UsersController {
     return user;
   }
 
-  @Post('signout')
+  @Post('/signout')
   async signOut(@Session() session: any) {
     session.userId = null;
   }
 
-  @Get('/color/:color')
+  @Get('/colors/:color')
   setColor(@Param('color') color: string, @Session() session: any) {
     session.color = color;
   }
@@ -73,11 +66,9 @@ export class UsersController {
     return session.color;
   }
 
-  // @UseInterceptors(ClassSerializerInterceptor) // 1111
-  // @Serialize(UserDto)
   @Get('/:id')
-  async getUserById(@Param('id') id: string) {
-    const user = await this.userService.findOne(parseInt(id));
+  async getUserById(@Param('id') id: number) {
+    const user = await this.userService.findOne(id);
     if (!user) throw new NotFoundException('User not found');
 
     return user;
