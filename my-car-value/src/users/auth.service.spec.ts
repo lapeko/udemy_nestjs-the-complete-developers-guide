@@ -3,6 +3,10 @@ import { AuthService } from './auth.service';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
 import { BadRequestException } from '@nestjs/common';
+import { scrypt as _scrypt } from 'crypto';
+import { promisify } from 'util';
+
+const scrypt = promisify(_scrypt);
 
 const createFakeUserService: () => Partial<UsersService> = () => ({
   findByEmail: () => Promise.resolve([]),
@@ -40,7 +44,9 @@ describe('AuthService', () => {
     expect(user.password).not.toEqual(password);
     const [salt, hash] = user.password.split('.');
     expect(salt).toBeDefined();
-    expect(hash).toBeDefined();
+    const expectedHash = await scrypt(password, salt, 32)
+      .then((buff: Buffer) => buff.toString('hex'));
+    expect(hash).toBe(expectedHash);
   });
 
   it('should throw an error if email already taken when signup', async () => {
