@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Session,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -44,6 +45,7 @@ export class UsersController {
   }
 
   @Post('/signin')
+  @HttpCode(200)
   async login(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signIn(body.email, body.password);
     session.userId = user.id;
