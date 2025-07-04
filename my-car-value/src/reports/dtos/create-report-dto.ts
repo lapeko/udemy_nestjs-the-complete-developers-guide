@@ -23,7 +23,7 @@ export class CreateReportDto {
 
   @IsNumber()
   @Min(0)
-  @Min(1e6)
+  @Max(1e6)
   mileage: number;
 
   @IsLongitude()
@@ -34,6 +34,6 @@ export class CreateReportDto {
 
   @IsNumber()
   @Min(0)
-  @Min(1e6)
+  @Max(1e6)
   price: number;
 }
