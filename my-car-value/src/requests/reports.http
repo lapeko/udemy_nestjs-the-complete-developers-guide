@@ -1,3 +1,6 @@
+### Get report
+GET http://localhost:3000/reports?maker=Honda&model=Civic&year=2015&mileage=120000&lng=0&lat=0
+
 ### Create report
 POST http://localhost:3000/reports
 Content-Type: application/json
@@ -12,5 +15,5 @@ Content-Type: application/json
   "price": 5000
 }
 
-### Check Admin Guard
-GET http://localhost:3000/reports
+### Approve report
+POST http://localhost:3000/reports/approve/1
