@@ -1,9 +1,10 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
+  Get,
   Param,
-  Patch,
-  Post, Query,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateReportDto } from './dtos/create-report-dto';
