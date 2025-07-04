@@ -9,6 +9,11 @@ import {
 } from 'typeorm';
 import { Report } from '../reports/reports.entity';
 
+export enum UserRole {
+  ADMIN = 'Administrator',
+  User = 'User',
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -19,6 +24,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({ default: UserRole.User })
+  role: UserRole;
 
   @OneToMany(() => Report, (report) => report.user)
   reports: Report[];
